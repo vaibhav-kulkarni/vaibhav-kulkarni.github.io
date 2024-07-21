@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      let R = 240;
+      let r = 100;
+      let d = 90;
+      // const Ax = 100;
+      // const Ay = 100;
+
+      let intervalId = null;
+
+      let Bx, By, Dx, Dy;
+      function calc(theta, psi) {
+        Bx = (R - r) * Math.cos(theta);
+        By = (R - r) * Math.sin(theta);
+        Dx = R + Bx + d * Math.cos(psi);
+        Dy = R + By + d * Math.sin(psi);
+      }
+
+      function myanimate() {
+        if (intervalId != null) {
+          return;
+        }
+        if (r < d) {
+          alert("d must be less than r");
+          return;
+        }
+        console.log("Animating...");
+        const c = document.getElementById("myCanvas");
+        const ctx = c.getContext("2d");
+        ctx.beginPath();
+        ctx.clearRect(0, 0, c.width, c.height);
+
+        let theta = 0;
+        let psi = 0;
+        let delta = 0.1;
+        calc(theta, psi);
+        intervalId = setInterval(() => {
+          ctx.moveTo(Dx, Dy);
+          theta += delta;
+          psi -= (delta * R) / r;
+          calc(theta, psi);
+          ctx.lineTo(Dx, Dy);
+          ctx.stroke();
+        }, 10);
+      }
+
+      function stop() {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+
+      function handleChange(event) {
+        switch (event.target.name) {
+          case "R":
+            R = Number(event.target.value);
+            // document.getElementById("R-span").innerHTML = R;
+            break;
+          case "r":
+            r = Number(event.target.value);
+            // document.getElementById("r-span").innerHTML = r;
+            break;
+          case "d":
+            d = Number(event.target.value);
+            // document.getElementById("d-span").innerHTML = d;
+            break;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: row">
+      <canvas id="myCanvas" width="800" height="800"></canvas>
+      <div style="float: right">
+        R =
+        <span id="R-span">240</span>
+        <!-- <input
+          type="number"
+          min="1"
+          max="400"
+          value="240"
+          name="R"
+          onchange="handleChange(event)"
+          readonly
+        /> -->
+        <br />
+        r =
+        <!-- span id="r-span">43</span -->
+        <input
+          type="number"
+          min="1"
+          max="400"
+          value="100"
+          name="r"
+          onchange="handleChange(event)"
+        />
+        <br />
+        d =
+        <!-- span id="d-span">25</span -->
+        <input
+          type="number"
+          min="1"
+          max="400"
+          value="90"
+          name="d"
+          onchange="handleChange(event)"
+        />
+        <br />
+        <button onclick="myanimate()">Animate</button>
+        <button onclick="stop()">Stop</button>
+      </div>
+    </div>
+  </body>
+</html>
